@@ -9,6 +9,7 @@
   "build": {
   "appId": "com.wplusplus.installer",
   "productName": "W++ Installer",
+    "publish": null,
     "artifactName": "WppInstaller-${platform}-${arch}.${ext}",
   "files": [
     "main.js",

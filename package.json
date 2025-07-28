@@ -1,0 +1,40 @@
+{
+  "name": "wpp-installer",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+  "appId": "com.wplusplus.installer",
+  "productName": "W++ Installer",
+    "artifactName": "WppInstaller-${platform}-${arch}.${ext}",
+  "files": [
+    "main.js",
+    "src/**/*",
+    "public/**/*"
+  ],
+  "directories": {
+    "buildResources": "assets",  
+    "output": "dist"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "icon.ico"           
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "icon.icns"          
+  },
+  "linux": {
+    "target": "AppImage",
+    "icon": "icon.png"           
+  }
+},
+
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}

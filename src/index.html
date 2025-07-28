@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>W++ Installer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1f1f1f;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 2em;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    h1 {
+      color: #7dd3fc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      background: #111;
+      color: #eee;
+      border: 1px solid #444;
+      padding: 1em;
+      resize: none;
+      font-family: monospace;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-top: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    #progressContainer {
+      width: 100%;
+      height: 25px;
+      background: #333;
+      border-radius: 8px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width 0.3s;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      margin-top: 1em;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 0.5em;
+    }
+
+    input[type="text"] {
+      background: #222;
+      color: #eee;
+      border: 1px solid #444;
+      padding: 8px;
+      border-radius: 5px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.logo-wrapper img {
+  width: 60px;
+  height: auto;
+  border-radius: 8px;
+}
+
+
+    .finish-logo {
+      display: block;
+      margin: 30px auto 10px auto;
+      width: 180px;
+      height: auto;
+    }
+
+    .finish-text {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #ccc;
+    }
+    #annoyingAI {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+#aiBubble {
+  background: #111;
+  color: #f0f0f0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid #7dd3fc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  max-width: 280px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  transition: opacity 0.3s ease;
+}
+
+  </style>
+</head>
+<!-- Annoying Intelligence bubble -->
+<div id="annoyingAI">
+  <div id="aiBubble">🤖 Loading snark...</div>
+</div>
+
+<body>
+
+  
+
+  <!-- Screen 1: License -->
+  <div id="licenseScreen" class="screen active">
+  <div class="logo-wrapper">
+    <img src="../public/wpp-logo.png" alt="W++ Logo" />
+    <h1>License Agreement</h1>
+  </div>
+  <p>Please read and accept the MIT license to continue.</p>
+  <textarea readonly>
+MIT License
+
+Copyright (c) 2025 Ofek Bickel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+  </textarea>
+  <label><input type="checkbox" id="agreeBox" /> I accept the MIT license terms</label>
+  <button id="agreeBtn" disabled>Continue</button>
+</div>
+
+
+  <!-- Screen 2: Folder Selection -->
+  <div id="folderScreen" class="screen">
+  <div class="logo-wrapper">
+    <img src="../public/wpp-logo.png" alt="W++ Logo" />
+    <h1>Select Installation Folder</h1>
+  </div>
+  <p>Choose where to install W++ on your system:</p>
+  <div class="row">
+    <input type="text" id="installPathInput" readonly />
+    <button id="browseBtn">Browse</button>
+  </div>
+  <button id="installBtn" disabled>Install</button>
+</div>
+
+
+  <!-- Screen 3: Installation -->
+  <div id="installScreen" class="screen">
+  <div class="logo-wrapper">
+    <img src="../public/wpp-logo.png" alt="W++ Logo" />
+    <h1>Installing W++...</h1>
+  </div>
+  <p>Please wait while W++ is being installed.</p>
+  <div id="progressContainer"><div id="progressBar"></div></div>
+  <p id="status">Preparing...</p>
+</div>
+
+
+  <!-- Screen 4: Finish -->
+  <div id="finishScreen" class="screen">
+    <img src="../public/wpp-logo.png" class="finish-logo" alt="W++ Logo" />
+    <h1 style="text-align: center;">W++ Installed!</h1>
+    <p class="finish-text">At least we're better than Visual Basic.</p>
+    <label><input type="checkbox" id="addPathBox" checked /> Add W++ to PATH</label>
+    <button id="addPathBtn">Apply</button>
+    <p id="pathStatus"></p>
+    <button id="finishBtn">Finish</button>
+  </div>
+
+  <script src="renderer.js"></script>
+  <script>
+    // Hide top-left logo on finish screen
+    const logo = document.getElementById('headerLogo');
+    const observer = new MutationObserver(() => {
+      if (document.getElementById('finishScreen').classList.contains('active')) {
+        logo.style.display = 'none';
+      } else {
+        logo.style.display = 'block';
+      }
+    });
+
+    observer.observe(document.body, { attributes: false, childList: true, subtree: true });
+  </script>
+</body>
+</html>

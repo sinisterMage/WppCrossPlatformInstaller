@@ -1,0 +1,35 @@
+name: Build W++ Installers
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+  workflow_dispatch:  # manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build for current platform
+        run: npm run dist
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpp-installer-${{ matrix.os }}
+          path: dist/

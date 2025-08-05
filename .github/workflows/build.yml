@@ -54,8 +54,14 @@ jobs:
       - name: Build installer for current platform
         run: npm run dist
 
-      - name: Package installer into zip
+      - name: Package installer into zip (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
         run: zip -r installer-${{ matrix.os }}.zip dist/
+
+      - name: Package installer into zip (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist/* -DestinationPath installer-${{ matrix.os }}.zip
 
       - name: Upload installer to WPlusPlus release
         uses: softprops/action-gh-release@v2

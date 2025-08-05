@@ -15,10 +15,16 @@ jobs:
         include:
           - os: windows-latest
             zip: ingot-win-x64.zip
+            output: IngotCLI.exe
+            final: ingot.exe
           - os: ubuntu-latest
             zip: ingot-linux-x64.zip
+            output: IngotCLI
+            final: ingot-linux-x64
           - os: macos-latest
             zip: ingot-osx-x64.zip
+            output: IngotCLI
+            final: ingot
 
     runs-on: ${{ matrix.os }}
 
@@ -32,17 +38,9 @@ jobs:
           unzip cli.zip -d extracted
 
       - name: Copy and rename CLI binary into public/
-        shell: bash
         run: |
           mkdir -p public
-          # Handle platform-specific binary rename
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            cp extracted/IngotCLI.exe public/ingot.exe
-          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            cp extracted/IngotCLI public/ingot-linux-x64
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            cp extracted/IngotCLI public/ingot
-          fi
+          cp extracted/${{ matrix.output }} public/${{ matrix.final }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -55,12 +53,15 @@ jobs:
       - name: Build installer for current platform
         run: npm run dist
 
+      - name: Package installer into zip
+        run: zip -r installer-${{ matrix.os }}.zip dist/
+
       - name: Upload installer to WPlusPlus release
         uses: softprops/action-gh-release@v2
         with:
-          name: "installer-${{ matrix.os }}"
           tag_name: v${{ github.event.inputs.version }}
-          files: dist/**/*
+          files: installer-${{ matrix.os }}.zip
           repository: sinisterMage/WPlusPlus
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.WPP_MAIN_PAT }}

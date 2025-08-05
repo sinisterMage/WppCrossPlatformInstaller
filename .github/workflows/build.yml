@@ -1,21 +1,43 @@
-name: Build W++ Installers
+name: Build and Publish W++ Installers
 
 on:
-  push:
-    branches:
-      - main  # or your default branch
-  workflow_dispatch:  # manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'W++ version (e.g. 0.2.9)'
+        required: true
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            zip: ingot-win-x64.zip
+            output: ingot.exe
+          - os: ubuntu-latest
+            zip: ingot-linux-x64.zip
+            output: ingot-linux-x64
+          - os: macos-latest
+            zip: ingot-osx-x64.zip
+            output: ingot
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout installer repo
         uses: actions/checkout@v4
+
+      - name: Download CLI zip from WPlusPlus release
+        run: |
+          curl -L -o cli.zip https://github.com/sinisterMage/WPlusPlus/releases/download/v${{ github.event.inputs.version }}/${{ matrix.zip }}
+          unzip cli.zip -d extracted
+
+      - name: Copy CLI binary into public/
+        run: |
+          mkdir -p public
+          cp extracted/${{ matrix.output }} public/${{ matrix.output }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -25,11 +47,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build for current platform
+      - name: Build installer for current platform
         run: npm run dist
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload installer to WPlusPlus release
+        uses: softprops/action-gh-release@v2
         with:
-          name: wpp-installer-${{ matrix.os }}
-          path: dist/
+          name: "installer-${{ matrix.os }}"
+          tag_name: v${{ github.event.inputs.version }}
+          files: dist/**/*
+          repo: sinisterMage/WPlusPlus
+        env:
+          GITHUB_TOKEN: ${{ secrets.WPP_MAIN_PAT }}

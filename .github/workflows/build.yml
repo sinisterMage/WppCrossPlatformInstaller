@@ -32,6 +32,7 @@ jobs:
           unzip cli.zip -d extracted
 
       - name: Copy and rename CLI binary into public/
+        shell: bash
         run: |
           mkdir -p public
           # Handle platform-specific binary rename

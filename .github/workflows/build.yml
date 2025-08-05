@@ -15,16 +15,19 @@ jobs:
         include:
           - os: windows-latest
             zip: ingot-win-x64.zip
-            output: IngotCLI.exe
+            output: ingot.exe
             final: ingot.exe
+
           - os: ubuntu-latest
             zip: ingot-linux-x64.zip
-            output: IngotCLI
+            output: ingot
             final: ingot-linux-x64
+
           - os: macos-latest
             zip: ingot-osx-x64.zip
-            output: IngotCLI
+            output: ingot
             final: ingot
+
 
     runs-on: ${{ matrix.os }}
 

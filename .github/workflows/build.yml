@@ -38,6 +38,7 @@ jobs:
           unzip cli.zip -d extracted
 
       - name: Copy and rename CLI binary into public/
+        shell: bash
         run: |
           mkdir -p public
           cp extracted/${{ matrix.output }} public/${{ matrix.final }}

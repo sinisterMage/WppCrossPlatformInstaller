@@ -15,13 +15,10 @@ jobs:
         include:
           - os: windows-latest
             zip: ingot-win-x64.zip
-            output: ingot.exe
           - os: ubuntu-latest
             zip: ingot-linux-x64.zip
-            output: ingot-linux-x64
           - os: macos-latest
             zip: ingot-osx-x64.zip
-            output: ingot
 
     runs-on: ${{ matrix.os }}
 
@@ -34,10 +31,17 @@ jobs:
           curl -L -o cli.zip https://github.com/sinisterMage/WPlusPlus/releases/download/v${{ github.event.inputs.version }}/${{ matrix.zip }}
           unzip cli.zip -d extracted
 
-      - name: Copy CLI binary into public/
+      - name: Copy and rename CLI binary into public/
         run: |
           mkdir -p public
-          cp extracted/${{ matrix.output }} public/${{ matrix.output }}
+          # Handle platform-specific binary rename
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            cp extracted/IngotCLI.exe public/ingot.exe
+          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            cp extracted/IngotCLI public/ingot-linux-x64
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            cp extracted/IngotCLI public/ingot
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4

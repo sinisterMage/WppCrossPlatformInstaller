@@ -61,6 +61,6 @@ jobs:
           name: "installer-${{ matrix.os }}"
           tag_name: v${{ github.event.inputs.version }}
           files: dist/**/*
-          repo: sinisterMage/WPlusPlus
+          repository: sinisterMage/WPlusPlus
         env:
           GITHUB_TOKEN: ${{ secrets.WPP_MAIN_PAT }}

@@ -40,30 +40,31 @@ ipcMain.handle('install-wpp', async (event, customPath) => {
   try {
     const platform = os.platform();
     let binaryName;
+let finalBinaryName;
 
-    switch (platform) {
-      case 'win32':
-        binaryName = 'ingot.exe';
-        break;
-      case 'darwin':
-        binaryName = 'ingot';
-        break;
-      case 'linux':
-        binaryName = 'ingot-linux-x64';
-        break;
-      default:
-        throw new Error('Unsupported platform');
-    }
+if (platform === 'win32') {
+  binaryName = 'ingot.exe';
+  finalBinaryName = 'ingot.exe';
+} else if (platform === 'darwin') {
+  binaryName = 'ingot';
+  finalBinaryName = 'ingot';
+} else if (platform === 'linux') {
+  binaryName = 'ingot-linux-x64'; // source file in /public
+  finalBinaryName = 'ingot';      // rename on install
+} else {
+  throw new Error('Unsupported platform');
+}
 
-    const sourcePath = path.join(__dirname, 'public', binaryName);
+const sourcePath = path.join(__dirname, 'public', binaryName);
 
-    const destDir = customPath || (
-      platform === 'win32'
-        ? path.join(process.env.APPDATA, 'WPlusPlus')
-        : path.join(os.homedir(), '.wplusplus')
-    );
+const destDir = customPath || (
+  platform === 'win32'
+    ? path.join(process.env.APPDATA, 'WPlusPlus')
+    : path.join(os.homedir(), '.wplusplus')
+);
 
-    const destPath = path.join(destDir, platform === 'win32' ? 'wpp.exe' : 'wpp');
+const destPath = path.join(destDir, finalBinaryName);
+
 
     fs.mkdirSync(destDir, { recursive: true });
 
